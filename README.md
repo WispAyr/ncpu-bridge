@@ -15,6 +15,14 @@ Every arithmetic, comparison, and bitwise operation runs through trained PyTorch
 | `bridge.neural_hash` | CRC32 computed through neural bitwise ops | XOR, AND, SHR (matches stdlib exactly) |
 | `bridge.c_compiler` | C subset → nCPU assembly → neural GPU execution | All ops (compiled programs run neurally) |
 | `bridge.neural_compress` | RLE + delta + hybrid compression | CMP (run detection), SUB (deltas), ADD (counting) |
+| `bridge.neural_net_stack` | TCP-like protocol: handshake, checksums, AIMD | ADD, SUB, CMP, SHL (Fletcher-16, flow control) |
+| `bridge.neural_scheduler` | Priority queue, EDF, load balancing | CMP (sorting), ADD/SUB (aging, capacity) |
+| `bridge.neural_mesh` | Distributed multi-machine nCPU routing | HTTP RPC + cache + fallback chain |
+| `bridge.hailo_backend` | ONNX export pipeline for Hailo-8 hardware | Model registry, 13 ONNX models exported |
+| `bridge.neural_crypto` | Stream cipher, KDF, MAC, Diffie-Hellman | XOR, ADD, SHL, MUL (all crypto primitives) |
+| `bridge.neural_fs` | Virtual filesystem: inodes, blocks, paths | AND, OR, XOR (bitmap), CMP (path resolution) |
+| `bridge.neural_regex` | Pattern matching engine | CMP (char comparison), range checks |
+| `bridge.neural_vm` | VM: heap malloc/free, stack, processes | CMP (bounds), ADD/SUB (pointers), first-fit alloc |
 
 ## Quick Start
 

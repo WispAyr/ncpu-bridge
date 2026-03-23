@@ -198,8 +198,8 @@ class ShiftNetASRONNX(nn.Module):
             nn.Linear(256, 1),
         )
         self.register_buffer("positions", torch.eye(64))
-        # Load weights
-        self.load_state_dict(state_dict)
+        # Load only matching keys
+        self.load_state_dict(state_dict, strict=False)
 
     def forward(self, combined_input: torch.Tensor) -> torch.Tensor:
         value_bits = combined_input[0, :64]
@@ -239,7 +239,7 @@ class ShiftNetROLONNX(nn.Module):
             nn.Linear(512, 64),
         )
         self.register_buffer("positions", torch.eye(64))
-        self.load_state_dict(state_dict)
+        self.load_state_dict(state_dict, strict=False)
 
     def forward(self, combined_input: torch.Tensor) -> torch.Tensor:
         value_bits = combined_input[0, :64]
