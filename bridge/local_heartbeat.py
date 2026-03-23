@@ -27,7 +27,7 @@ if str(BRIDGE_PATH) not in sys.path:
     sys.path.insert(0, str(BRIDGE_PATH))
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "qwen3:1.7b"
+MODEL = "gemma3:1b"
 
 SYSTEM_PROMPT = """You are Skynet's local heartbeat monitor. You receive JSON health data where every computation was verified by a neural ALU (provably correct arithmetic).
 
@@ -64,11 +64,27 @@ def run_neural_checks() -> dict:
 
 def ask_local_llm(check_results: dict) -> dict:
     """Ask local LLM to interpret the neural-verified results."""
-    prompt = f"""/no_think
-{SYSTEM_PROMPT}
+    # Compact the data — don't send full JSON, just the summary
+    ob = check_results.get("obligations", {})
+    h = check_results.get("health", {})
+    fb = check_results.get("feedback", {})
+    
+    compact = (
+        f"Obligations: {ob.get('ok',0)}/{ob.get('total',0)} OK. "
+        f"Health: {h.get('ok',0)}/{h.get('total',0)} OK. "
+    )
+    
+    # Add details for failures only
+    for d in ob.get("details", []):
+        if not d.get("ok"):
+            compact += f"ISSUE: {d['name']} ({d.get('status','?')}, {d.get('hours_ago',0)}h ago). "
+    for d in h.get("details", []):
+        if not d.get("ok"):
+            compact += f"ISSUE: {d['name']}={d.get('value',0)} (threshold {d.get('threshold',0)}). "
+    
+    prompt = f"""{SYSTEM_PROMPT}
 
-Neural-verified check results:
-{json.dumps(check_results, indent=2)}"""
+{compact}"""
 
     try:
         result = subprocess.run(
@@ -124,9 +140,32 @@ def run_local_heartbeat(quiet: bool = False) -> dict:
     
     total_time = time.perf_counter() - t0
     
+    # Decision: use neural-verified data for the verdict, not LLM
+    # LLM is for formatting/summarising, not deciding
+    ob_data = check_results.get("obligations", {})
+    h_data = check_results.get("health", {})
+    fb_data = check_results.get("feedback", {})
+    
+    critical_fails = fb_data.get("critical_failures", 0)
+    ob_ok = ob_data.get("ok", 0) == ob_data.get("total", 1)
+    h_ok = h_data.get("ok", 0) == h_data.get("total", 1)
+    
+    # Deterministic verdict from neural-verified data
+    if critical_fails > 0:
+        issues = [d["name"] for d in ob_data.get("details", []) if not d.get("ok")]
+        issues += [d["name"] for d in h_data.get("details", []) if not d.get("ok")]
+        verdict = f"ALERT: {', '.join(issues[:3])}"
+        is_ok = False
+    elif not ob_ok or not h_ok:
+        verdict = f"WARNING: {ob_data.get('ok',0)}/{ob_data.get('total',0)} obligations, {h_data.get('ok',0)}/{h_data.get('total',0)} health"
+        is_ok = True  # warnings don't block
+    else:
+        verdict = "HEARTBEAT_OK"
+        is_ok = True
+    
     result = {
-        "verdict": llm_result["verdict"],
-        "is_ok": llm_result["is_ok"],
+        "verdict": verdict,
+        "is_ok": is_ok,
         "neural_checks": check_results.get("feedback", {}),
         "llm": {
             "model": llm_result.get("model"),
