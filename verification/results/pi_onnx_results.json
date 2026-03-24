@@ -1,0 +1,42 @@
+{
+  "substrate": "pi-onnx",
+  "hostname": "halio",
+  "arch": "aarch64",
+  "python": "3.11.2",
+  "framework": "onnxruntime-1.24.4",
+  "timestamp": "2026-03-24T14:59:29.827576+00:00",
+  "ops": {
+    "add": {
+      "hash": "78551e39db6eb4cce7cf2eef1e822615df0b248de4a2c7d36e9b526db27dbb6f",
+      "time_s": 1.762
+    },
+    "sub": {
+      "hash": "9816a55497264986d3945014daddb97445549117d06f0bd1ab7ab4cd282674e6",
+      "time_s": 1.781
+    },
+    "mul": {
+      "hash": "122294213aeefbb4f02e9e8f33f237d70985ece522b0b1f6a04b1ac04ae4540c",
+      "time_s": 1.51
+    },
+    "div": {
+      "hash": "50ef8e9978c534b94e417ec988fa858e0a1f2be7252d9faba797e65f94c8a236",
+      "time_s": 55.858
+    },
+    "cmp": {
+      "hash": "ebe9a1f604ea6c91ffa87045e21f532bc9842b2b03d52824d556b2be3a303867",
+      "time_s": 1.774
+    },
+    "and": {
+      "hash": "d1630ea5562dab606f19b6c7aac6efd295a6f25f38b421085aa5c767f68d46b4",
+      "time_s": 0.267
+    },
+    "or": {
+      "hash": "4968cdfccffe38af4283f0bba9f8a3f6b4257033335a061bda1a5988e0e59f94",
+      "time_s": 0.248
+    },
+    "xor": {
+      "hash": "5bddb6ecc676d3a3703e005f15eb87c23f8ec1a384fd03259436d51c82b710f5",
+      "time_s": 0.246
+    }
+  }
+}

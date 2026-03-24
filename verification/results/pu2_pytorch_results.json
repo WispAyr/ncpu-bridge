@@ -1,0 +1,58 @@
+{
+  "substrate": "pu2-pytorch",
+  "hostname": "172-6-185-73.lightspeed.sntcca.sbcglobal.net",
+  "arch": "arm64",
+  "python": "3.14.2",
+  "framework": "pytorch-2.10.0",
+  "timestamp": "2026-03-24T15:01:00.712118+00:00",
+  "ops": {
+    "add": {
+      "hash": "78551e39db6eb4cce7cf2eef1e822615df0b248de4a2c7d36e9b526db27dbb6f",
+      "reference_hash": "ceb1aba3d7fe01893e596a77f3e166a42cfd6858845ecab13384750da762fe9d",
+      "time_s": 0.297,
+      "matches_reference": false
+    },
+    "sub": {
+      "hash": "9816a55497264986d3945014daddb97445549117d06f0bd1ab7ab4cd282674e6",
+      "reference_hash": "1482e445cfdc5a1928ff9df567eb1b5d1acbda79618b3a80f208b898cea09307",
+      "time_s": 0.245,
+      "matches_reference": false
+    },
+    "mul": {
+      "hash": "122294213aeefbb4f02e9e8f33f237d70985ece522b0b1f6a04b1ac04ae4540c",
+      "reference_hash": "4e82b9225700fdf906fdd9ba9d2068a6c83103e4862021ab5e51eb525d84824b",
+      "time_s": 0.006,
+      "matches_reference": false
+    },
+    "div": {
+      "hash": "50ef8e9978c534b94e417ec988fa858e0a1f2be7252d9faba797e65f94c8a236",
+      "reference_hash": "50ef8e9978c534b94e417ec988fa858e0a1f2be7252d9faba797e65f94c8a236",
+      "time_s": 7.816,
+      "matches_reference": true
+    },
+    "cmp": {
+      "hash": "ebe9a1f604ea6c91ffa87045e21f532bc9842b2b03d52824d556b2be3a303867",
+      "reference_hash": "ebe9a1f604ea6c91ffa87045e21f532bc9842b2b03d52824d556b2be3a303867",
+      "time_s": 0.253,
+      "matches_reference": true
+    },
+    "and": {
+      "hash": "d1630ea5562dab606f19b6c7aac6efd295a6f25f38b421085aa5c767f68d46b4",
+      "reference_hash": "d1630ea5562dab606f19b6c7aac6efd295a6f25f38b421085aa5c767f68d46b4",
+      "time_s": 0.047,
+      "matches_reference": true
+    },
+    "or": {
+      "hash": "4968cdfccffe38af4283f0bba9f8a3f6b4257033335a061bda1a5988e0e59f94",
+      "reference_hash": "4968cdfccffe38af4283f0bba9f8a3f6b4257033335a061bda1a5988e0e59f94",
+      "time_s": 0.045,
+      "matches_reference": true
+    },
+    "xor": {
+      "hash": "5bddb6ecc676d3a3703e005f15eb87c23f8ec1a384fd03259436d51c82b710f5",
+      "reference_hash": "5bddb6ecc676d3a3703e005f15eb87c23f8ec1a384fd03259436d51c82b710f5",
+      "time_s": 0.045,
+      "matches_reference": true
+    }
+  }
+}

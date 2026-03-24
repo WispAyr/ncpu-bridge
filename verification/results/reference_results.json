@@ -1,0 +1,30 @@
+{
+  "substrate": "reference",
+  "hostname": "172-6-185-73.lightspeed.sntcca.sbcglobal.net",
+  "ops": {
+    "add": {
+      "hash": "ceb1aba3d7fe01893e596a77f3e166a42cfd6858845ecab13384750da762fe9d"
+    },
+    "sub": {
+      "hash": "1482e445cfdc5a1928ff9df567eb1b5d1acbda79618b3a80f208b898cea09307"
+    },
+    "mul": {
+      "hash": "4e82b9225700fdf906fdd9ba9d2068a6c83103e4862021ab5e51eb525d84824b"
+    },
+    "div": {
+      "hash": "50ef8e9978c534b94e417ec988fa858e0a1f2be7252d9faba797e65f94c8a236"
+    },
+    "cmp": {
+      "hash": "ebe9a1f604ea6c91ffa87045e21f532bc9842b2b03d52824d556b2be3a303867"
+    },
+    "and": {
+      "hash": "d1630ea5562dab606f19b6c7aac6efd295a6f25f38b421085aa5c767f68d46b4"
+    },
+    "or": {
+      "hash": "4968cdfccffe38af4283f0bba9f8a3f6b4257033335a061bda1a5988e0e59f94"
+    },
+    "xor": {
+      "hash": "5bddb6ecc676d3a3703e005f15eb87c23f8ec1a384fd03259436d51c82b710f5"
+    }
+  }
+}
