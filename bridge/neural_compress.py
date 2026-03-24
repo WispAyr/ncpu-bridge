@@ -25,7 +25,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-NCPU_PATH = Path("/Users/noc/projects/nCPU")
+from bridge.config import get_ncpu_path, get_bridge_path, get_clawd_data_path
+NCPU_PATH = get_ncpu_path()
 if str(NCPU_PATH) not in sys.path:
     sys.path.insert(0, str(NCPU_PATH))
 
@@ -294,7 +295,7 @@ def demo():
     
     # ── Demo 4: Compress actual outcome data ──
     print("── Metrics: Compressing outcome data ──")
-    outcomes_path = Path("/Users/noc/clawd/data/ncpu-outcomes.jsonl")
+    outcomes_path = get_clawd_data_path("ncpu-outcomes.jsonl")
     if outcomes_path.exists():
         outcomes = []
         with outcomes_path.open() as f:

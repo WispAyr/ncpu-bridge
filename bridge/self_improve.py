@@ -21,8 +21,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-OUTCOMES_PATH = Path("/Users/noc/clawd/data/ncpu-outcomes.jsonl")
-IMPROVEMENTS_PATH = Path("/Users/noc/clawd/data/ncpu-improvements.jsonl")
+OUTCOMES_PATH = get_clawd_data_path("ncpu-outcomes.jsonl")
+IMPROVEMENTS_PATH = get_clawd_data_path("ncpu-improvements.jsonl")
 
 
 def load_outcomes(path: Path = OUTCOMES_PATH) -> list[dict]:

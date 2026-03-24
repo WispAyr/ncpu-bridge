@@ -18,8 +18,9 @@ import sys
 import time
 from pathlib import Path
 
-NCPU_PATH = Path("/Users/noc/projects/nCPU")
-BRIDGE_PATH = Path("/Users/noc/projects/ncpu-bridge")
+from bridge.config import get_ncpu_path, get_bridge_path, get_clawd_data_path
+NCPU_PATH = get_ncpu_path()
+BRIDGE_PATH = get_bridge_path()
 
 if str(NCPU_PATH) not in sys.path:
     sys.path.insert(0, str(NCPU_PATH))

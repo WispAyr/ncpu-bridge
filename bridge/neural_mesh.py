@@ -43,11 +43,12 @@ from typing import Optional
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 
-NCPU_PATH = Path("/Users/noc/projects/nCPU")
+from bridge.config import get_ncpu_path, get_bridge_path, get_clawd_data_path
+NCPU_PATH = get_ncpu_path()
 if str(NCPU_PATH) not in sys.path:
     sys.path.insert(0, str(NCPU_PATH))
 
-MESH_CONFIG_PATH = Path("/Users/noc/clawd/data/ncpu-mesh-nodes.json")
+MESH_CONFIG_PATH = get_clawd_data_path("ncpu-mesh-nodes.json")
 
 
 @dataclass

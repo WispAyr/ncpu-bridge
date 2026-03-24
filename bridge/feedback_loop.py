@@ -15,7 +15,8 @@ from typing import Any, Optional
 import sys
 import numpy as np
 
-NCPU_PATH = Path("/Users/noc/projects/nCPU")
+from bridge.config import get_ncpu_path, get_bridge_path, get_clawd_data_path
+NCPU_PATH = get_ncpu_path()
 if str(NCPU_PATH) not in sys.path:
     sys.path.insert(0, str(NCPU_PATH))
 
@@ -74,8 +75,8 @@ class SkynetFeedbackLoop:
 
     def __init__(
         self,
-        trajectory_path: str = "/Users/noc/clawd/data/ncpu-trajectories.jsonl",
-        outcomes_path: str = "/Users/noc/clawd/data/ncpu-outcomes.jsonl",
+        trajectory_path: str = "",
+        outcomes_path: str = "",
     ):
         self.trajectory_logger = TrajectoryLogger(path=trajectory_path)
         self.outcomes_path = Path(outcomes_path)

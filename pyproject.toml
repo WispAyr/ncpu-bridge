@@ -5,9 +5,29 @@ build-backend = "setuptools.backends._legacy:_Backend"
 [project]
 name = "ncpu-bridge"
 version = "0.1.0"
-description = "Bridge for Skynet to offload computations to nCPU's verified neural ALU"
+description = "Bridge for computing through nCPU's verified neural ALU — arithmetic via trained neural networks"
 requires-python = ">=3.10"
-dependencies = ["torch"]
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = [
+    "torch>=2.0",
+    "numpy>=1.24",
+    "onnxruntime>=1.15",
+]
+
+[project.optional-dependencies]
+server = ["fastapi>=0.100", "uvicorn>=0.23", "httpx>=0.24"]
+hailo = ["hailort>=4.0"]
+dev = ["pytest>=7.0", "ruff>=0.1"]
 
 [project.scripts]
 ncpu-bridge = "bridge.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["bridge*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

@@ -12,10 +12,10 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-sys.path.insert(0, '/Users/noc/projects/nCPU')
+import os; sys.path.insert(0, os.environ.get('NCPU_PATH', str(Path(__file__).resolve().parent.parent.parent / 'nCPU')))
 from ncpu.model.neural_ops import NeuralOps, NeuralFullAdder, NeuralMultiplierLUT, NeuralLogical
 
-MODELS_DIR = '/Users/noc/projects/nCPU/models'
+MODELS_DIR = os.environ.get('NCPU_PATH', str(Path(__file__).resolve().parent.parent.parent / 'nCPU')) + '/models'
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), 'results')
 OPERATIONS = ['add', 'sub', 'mul', 'div', 'cmp', 'and', 'or', 'xor']
 N_BITS = 32

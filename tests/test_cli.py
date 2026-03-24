@@ -12,7 +12,7 @@ def run_cli(*args: str) -> subprocess.CompletedProcess:
         [sys.executable, "-m", "bridge.cli", *args],
         capture_output=True,
         text=True,
-        cwd="/Users/noc/projects/ncpu-bridge",
+        cwd=str(Path(__file__).resolve().parent.parent),
     )
 
 

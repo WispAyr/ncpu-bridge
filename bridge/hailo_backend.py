@@ -25,7 +25,8 @@ from typing import Optional
 
 import numpy as np
 
-NCPU_PATH = Path("/Users/noc/projects/nCPU")
+from bridge.config import get_ncpu_path, get_bridge_path, get_clawd_data_path
+NCPU_PATH = get_ncpu_path()
 if str(NCPU_PATH) not in sys.path:
     sys.path.insert(0, str(NCPU_PATH))
 
@@ -33,7 +34,7 @@ import torch
 import torch.nn as nn
 
 MODELS_DIR = NCPU_PATH / "models"
-EXPORT_DIR = Path("/Users/noc/projects/ncpu-bridge/exported_models")
+EXPORT_DIR = get_bridge_path() / "exported_models"
 
 # Import actual model classes
 from ncpu.model.neural_ops import (

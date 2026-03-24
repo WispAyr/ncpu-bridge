@@ -20,7 +20,8 @@ import struct
 import sys
 from pathlib import Path
 
-NCPU_PATH = Path("/Users/noc/projects/nCPU")
+from bridge.config import get_ncpu_path, get_bridge_path, get_clawd_data_path
+NCPU_PATH = get_ncpu_path()
 if str(NCPU_PATH) not in sys.path:
     sys.path.insert(0, str(NCPU_PATH))
 
@@ -268,7 +269,7 @@ def demo():
     
     chord = synth.mix(c, e, g)
     
-    wav_path = "/Users/noc/projects/ncpu-bridge/neural_chord.wav"
+    wav_path = str(get_bridge_path() / "neural_chord.wav")
     synth.to_wav(chord, wav_path)
     print(f"  C major chord (C4+E4+G4)")
     print(f"  Samples: {len(chord)}")

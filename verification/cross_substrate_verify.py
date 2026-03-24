@@ -21,7 +21,7 @@ import platform
 import requests
 from datetime import datetime, timezone
 
-sys.path.insert(0, '/Users/noc/projects/nCPU')
+import os; sys.path.insert(0, os.environ.get('NCPU_PATH', str(Path(__file__).resolve().parent.parent.parent / 'nCPU')))
 from ncpu.model.neural_ops import NeuralOps
 
 OPERATIONS = ['add', 'sub', 'mul', 'div', 'cmp', 'and', 'or', 'xor']
@@ -62,7 +62,7 @@ def run_reference():
 def run_pu2_pytorch():
     """Run all ops exhaustively on PU2 using local PyTorch models."""
     print("[PU2-Direct] Loading models...")
-    ops = NeuralOps(models_dir='/Users/noc/projects/nCPU/models')
+    ops = NeuralOps(models_dir=os.environ.get('NCPU_PATH', str(Path(__file__).resolve().parent.parent.parent / 'nCPU')) + '/models')
     ops.load()
 
     op_methods = {

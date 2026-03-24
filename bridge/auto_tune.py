@@ -24,15 +24,16 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
 
-NCPU_PATH = Path("/Users/noc/projects/nCPU")
+from bridge.config import get_ncpu_path, get_bridge_path, get_clawd_data_path
+NCPU_PATH = get_ncpu_path()
 if str(NCPU_PATH) not in sys.path:
     sys.path.insert(0, str(NCPU_PATH))
 
 from bridge.compute import NCPUBridge
 
-OUTCOMES_PATH = Path("/Users/noc/clawd/data/ncpu-outcomes.jsonl")
-PROPOSALS_PATH = Path("/Users/noc/clawd/data/ncpu-threshold-proposals.json")
-THRESHOLDS_PATH = Path("/Users/noc/clawd/data/ncpu-thresholds.json")
+OUTCOMES_PATH = get_clawd_data_path("ncpu-outcomes.jsonl")
+PROPOSALS_PATH = get_clawd_data_path("ncpu-threshold-proposals.json")
+THRESHOLDS_PATH = get_clawd_data_path("ncpu-thresholds.json")
 
 # Default thresholds (can be overridden by THRESHOLDS_PATH)
 DEFAULT_THRESHOLDS = {

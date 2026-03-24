@@ -8,7 +8,7 @@
 
 ## Abstract
 
-We present **ncpu-bridge**, a library that routes every computing primitive — arithmetic, comparison, bitwise, and shift operations — through trained PyTorch neural networks. Built atop the nCPU project's 66 verified ALU operations, ncpu-bridge implements 44 system-level modules spanning a C compiler, TCP stack, filesystem, virtual machine, database, kernel, and more. All computation flows through 34 trained models totalling ~2.5 million parameters. We demonstrate neural Turing-completeness in practice: every module produces correct results, verified against standard library implementations. ONNX deployment on ARM achieves 576,668 ops/sec with a clear path to sub-microsecond latency via Hailo-8 neural accelerators. The project is open source at [github.com/WispAyr/ncpu-bridge](https://github.com/WispAyr/ncpu-bridge).
+We present **ncpu-bridge**, a library that routes every computing primitive — arithmetic, comparison, bitwise, and shift operations — through trained PyTorch neural networks. Built atop the nCPU project's 66 verified ALU operations, ncpu-bridge implements 44 system-level modules spanning a C compiler, TCP stack, filesystem, virtual machine, database, kernel, and more. All computation flows through 34 trained models totalling ~2.5 million parameters. We demonstrate neural Turing-completeness in practice: every module produces correct results, verified against standard library implementations. ONNX deployment achieves 3.9M ops/sec on Raspberry Pi 5 (ARM64) and 10.8M ops/sec on Apple Silicon via batched inference, with a clear path to further acceleration via Hailo-8 neural accelerators. The project is open source at [github.com/WispAyr/ncpu-bridge](https://github.com/WispAyr/ncpu-bridge).
 
 ---
 
@@ -19,6 +19,8 @@ A modern CPU's arithmetic logic unit performs billions of additions per second u
 > **Can you replace every logic gate with a neural network and still build a functioning computer?**
 
 The answer is yes. It is also magnificently slow. But correctness is the point — performance is an engineering problem with a known solution path (hardware neural accelerators).
+
+Prior work on neural arithmetic — NALU [1], NAU/NMU [2], iNALU [3], and the comprehensive NALM survey [4] — has focused on learning individual operations that *generalise* beyond the training range. Neural Turing Machines [5] and Neural GPUs [6] extend this to algorithm learning with external memory. Our approach inverts the priority: rather than pursuing extrapolation on unbounded domains, we train models to **100% correctness on the full bounded domain** (8-bit), then compose 44 system-level modules atop these perfect primitives to demonstrate practical Turing-completeness. See Section 11 for a detailed comparison.
 
 The **nCPU** project trains one PyTorch model per ALU operation. Each model learns the input-output mapping for 8-bit operands with 100% accuracy across the full domain (256 × 256 = 65,536 input pairs per binary operation). The **ncpu-bridge** library builds an entire computing stack on top of these neural primitives.
 
@@ -279,39 +281,58 @@ Baseline performance on the development machine (PU2):
 
 **Overhead factor:** ~450,000× slower than native. This is PyTorch inference overhead on small tensors — the model computation itself is trivial, but framework dispatch dominates.
 
-### 5.2 ONNX Runtime on ARM (Raspberry Pi, Cortex-A76)
+### 5.2 ONNX Runtime — Single-Inference Latency
 
-ONNX export eliminates PyTorch overhead entirely:
+ONNX export eliminates PyTorch overhead entirely. Benchmarked on two platforms:
 
-| Model | ONNX Latency | Speedup vs PyTorch |
-|-------|-------------|-------------------|
-| arithmetic | 8 µs | 56× |
-| multiply | 10 µs | 50× |
-| compare | 8 µs | 50× |
-| logical | 9 µs | 47× |
-| divide | 11 µs | 45× |
-| carry_combine | 8 µs | 50× |
-| lsl | 9 µs | 50× |
-| lsr | 9 µs | 50× |
-| rol | 10 µs | 45× |
-| asr | 9 µs | 50× |
-| sincos | 12 µs | 38× |
-| sqrt | 10 µs | 45× |
-| exp | 10 µs | 45× |
-| log | 10 µs | 45× |
-| atan2 | 11 µs | 41× |
+#### Raspberry Pi 5 (ARM Cortex-A76, 8GB RAM, ONNX Runtime 1.24.4)
 
-**Aggregate throughput: 576,668 neural ops/sec** on a single ARM core via ONNX Runtime.
+| Model | Latency | Ops/sec |
+|-------|---------|---------|
+| arithmetic | 0.012 ms | 82,038 |
+| carry_combine | 0.011 ms | 89,204 |
+| compare | 0.009 ms | 114,742 |
+| divide | 0.011 ms | 89,367 |
+| logical | 0.013 ms | 76,003 |
+| multiply | 0.390 ms | 2,562 |
+| exp | 0.023 ms | 42,944 |
+| sqrt | 0.091 ms | 11,000 |
 
-### 5.3 Throughput Context
+Most core ALU models achieve **80,000–115,000 single-inference ops/sec** on ARM. The multiply model (LUT architecture) is an outlier at 0.390 ms due to its larger lookup table structure.
+
+### 5.3 Batch Scaling
+
+Batched inference dramatically increases effective throughput by amortising framework overhead across multiple operations:
+
+#### Raspberry Pi 5 — Arithmetic Model (ARM64)
+
+| Batch Size | Effective Ops/sec | Scaling Factor |
+|------------|-------------------|----------------|
+| 1 | 81,016 | 1× |
+| 10 | 549,577 | 6.8× |
+| 100 | 2,307,890 | 28.5× |
+| 1,000 | 3,920,165 | 48.4× |
+
+#### Apple Silicon (M4 Max) — Arithmetic Model
+
+| Batch Size | Effective Ops/sec |
+|------------|-------------------|
+| 1,000 | 10,800,000 |
+
+**Peak throughput: 3.9M ops/sec on Raspberry Pi ARM64, 10.8M ops/sec on Apple Silicon** — both via ONNX Runtime with batched inference. This represents a ~19× improvement over single-inference on Pi and demonstrates that neural ALU throughput scales efficiently with batch size.
+
+### 5.4 Throughput Context
 
 ```
-Native CPU:     ~1,000,000,000 ops/sec  (1 GHz effective)
-ONNX on ARM:          576,668 ops/sec  (8-12 µs/op)
-PyTorch on Mac:         2,222 ops/sec  (450 µs/op)
+Native CPU:         ~1,000,000,000 ops/sec  (1 GHz effective)
+ONNX batched (Mac):     10,800,000 ops/sec  (batch=1000)
+ONNX batched (Pi):       3,920,165 ops/sec  (batch=1000)
+ONNX single (Pi):          ~82,000 ops/sec  (single inference)
+PyTorch on Mac:              2,222 ops/sec  (450 µs/op)
 
-Ratio: ONNX is ~1,730× slower than native
-        but 259× faster than PyTorch
+Ratio: Batched ONNX is ~93× slower than native (Apple Silicon)
+       Batched ONNX is ~255× slower than native (Pi ARM)
+       but ~4,860× faster than PyTorch
 ```
 
 15 ONNX models were exported and verified for correctness against their PyTorch counterparts using `opset_version=18`.
@@ -355,7 +376,7 @@ At 26 TOPS with our small models (~10-100K params), conservative estimates:
 | Shifts | < 1 µs | 9-10× |
 | ARM64 decode | ~10 µs | varies |
 
-**Projected throughput: >1M neural ops/sec**, approaching the point where neural CPU operations become practical for real workloads.
+**Projected throughput: >10M neural ops/sec** (batched), approaching the point where neural CPU operations become practical for real workloads. With batched ONNX already achieving 3.9M ops/sec on the same Pi hardware, Hailo-8 acceleration could push beyond 50M ops/sec.
 
 ### 6.4 The Vision: Programmable Neural FPGA
 
@@ -571,31 +592,107 @@ This pipeline transforms a research artifact (trained neural ALU) into a product
 
 ---
 
-## 11. Limitations and Future Work
+## 11. Cross-Platform Deployment
 
-### 11.1 Performance Gap
+### 11.1 Raspberry Pi 5 (ARM64)
+
+The complete ncpu-bridge stack has been verified on Raspberry Pi 5 (Broadcom BCM2712, ARM Cortex-A76, 8GB RAM) running ONNX Runtime 1.24.4 on 64-bit Linux. Key results:
+
+- **15 ONNX models** all load and execute correctly on ARM64
+- **Full adder circuit:** 8/8 truth table entries correct (cross-platform verified against Apple Silicon)
+- **Single-inference throughput:** 76,000–115,000 ops/sec for core ALU models
+- **Batched throughput:** 3,920,165 ops/sec at batch size 1,000
+- **Hailo-8 NPU** detected and operational (PCIe 0001:01:00.0), ready for HEF compilation
+
+The Pi deployment demonstrates that neural computing primitives are truly portable: the same ONNX weights produce identical results on ARM Cortex-A76 as on Apple M4 Max, verified exhaustively over 524,288 test cases (Section 9).
+
+### 11.2 Apple Silicon (M4 Max)
+
+On the development machine (PU2, Apple M4 Max), batched ONNX inference reaches **10.8M ops/sec** at batch size 1,000 — a 2.75× speedup over the Pi, consistent with the M4 Max's higher clock speed and memory bandwidth.
+
+### 11.3 Deployment Summary
+
+| Platform | Single-Inference | Batched (×1000) | Hardware Accel |
+|----------|-----------------|-----------------|----------------|
+| Apple M4 Max (macOS) | ~100K ops/sec | 10.8M ops/sec | — |
+| Raspberry Pi 5 (Linux) | ~82K ops/sec | 3.9M ops/sec | Hailo-8 ready |
+| Hailo-8 (projected) | >1M ops/sec | >50M ops/sec | 26 TOPS |
+
+---
+
+## 12. Related Work
+
+Our work sits at the intersection of two research threads: neural arithmetic modules that learn mathematical operations, and neural computer architectures that learn algorithms.
+
+### 11.1 Neural Arithmetic Logic Modules
+
+**NALU** (Trask et al., 2018) [1] introduced the Neural Arithmetic Logic Unit, using learned gates to select between addition/subtraction (via a linear accumulator) and multiplication/division (via log-space computation). NALU demonstrated extrapolation on tasks like counting and arithmetic over images, but struggles with division, negative inputs, and training instability in deeper networks.
+
+**NAU/NMU** (Madsen & Johansen, 2020) [2] addressed NALU's convergence issues by decomposing arithmetic into a Neural Addition Unit and Neural Multiplication Unit. Through careful initialization, parameter-space restriction, and sparsity regularization, NAU/NMU converge more consistently, handle negative values, and learn with fewer parameters. Published at ICLR 2020.
+
+**iNALU** (Schlör et al., 2020) [3] proposed an improved NALU that fixes the inability to multiply or divide negative values and addresses training stability for deeper networks, outperforming the original on arithmetic precision and convergence.
+
+**Primer for NALMs** (Mistry et al., 2022) [4] provided the first comprehensive survey and benchmark of all neural arithmetic logic modules, highlighting inconsistencies across experimental setups. Their unified benchmark reveals that no single module dominates across all arithmetic tasks.
+
+All of the above focus on *generalisation*: learning arithmetic that extrapolates beyond the training distribution. ncpu-bridge takes the opposite approach — we train on the *entire* bounded domain (all 65,536 input pairs for 8-bit operands) and demand 100% accuracy, then build upward.
+
+### 11.2 Neural Computer Architectures
+
+**Neural Turing Machines** (Graves et al., 2014) [5] coupled neural networks to external memory via differentiable attention, creating a system analogous to a Turing machine that learns algorithms (copying, sorting, recall) from examples. The architecture is end-to-end differentiable but sequential, making training difficult for complex programs.
+
+**Neural GPUs** (Kaiser & Sutskever, 2015) [6] addressed NTM's sequential bottleneck with a parallel architecture based on convolutional gated recurrent units. Neural GPUs learn long binary addition and multiplication, generalising from 20-bit training examples to much longer inputs with zero errors. However, the approach remains focused on individual algorithmic tasks.
+
+### 11.3 Comparison
+
+| Approach | Domain | Accuracy | Generalisation | System Modules |
+|----------|--------|----------|---------------|----------------|
+| NALU [1] | Unbounded ℝ | ~95–99% | Extrapolation focus | 0 |
+| NAU/NMU [2] | Unbounded ℝ | >99% | Better extrapolation | 0 |
+| iNALU [3] | Unbounded ℝ | >99% | Handles negatives | 0 |
+| NTM [5] | Variable-length | Task-dependent | Algorithm learning | 0 |
+| Neural GPU [6] | Variable-length | ~100% (binary) | Length generalisation | 0 |
+| **ncpu-bridge** | **8-bit (bounded)** | **100%** | **N/A (full domain)** | **44** |
+
+Prior work asks: "Can neural networks *generalise* on arithmetic?" We ask: "Can neural networks *replace* every gate in a computer?" The distinction leads to fundamentally different design choices: bounded-domain exhaustive training instead of distribution-based generalisation; system-level composition (44 modules) instead of isolated benchmarks; and cross-substrate verification (PyTorch ↔ ONNX bit-identical) instead of accuracy metrics on held-out ranges.
+
+### References
+
+1. Trask, A. et al. "Neural Arithmetic Logic Units." arXiv:1808.00508, 2018.
+2. Madsen, A. and Johansen, A.R. "Neural Arithmetic Units." ICLR, 2020. arXiv:2001.05016.
+3. Schlör, D., Ring, M. and Hotho, A. "iNALU: Improved Neural Arithmetic Logic Unit." arXiv:2003.07629, 2020.
+4. Mistry, B., Farrahi, K. and Hare, J. "A Primer for Neural Arithmetic Logic Modules." JMLR, 23(1):1–58, 2022. arXiv:2101.09530.
+5. Graves, A., Wayne, G. and Danihelka, I. "Neural Turing Machines." arXiv:1410.5401, 2014.
+6. Kaiser, Ł. and Sutskever, I. "Neural GPUs Learn Algorithms." arXiv:1511.08228, 2015.
+
+---
+
+## 13. Limitations and Future Work
+
+### 13.1 Performance Gap
 
 The fundamental limitation is speed:
 
 | Platform | Latency/op | vs Native |
 |----------|-----------|-----------|
 | Native CPU | < 1 ns | 1× |
-| ONNX on ARM | 8-12 µs | ~10,000× |
+| ONNX single (Pi ARM) | 9-12 µs | ~10,000× |
+| ONNX batched (Pi ARM) | 0.26 µs effective | ~260× |
+| ONNX batched (Apple Silicon) | 0.09 µs effective | ~90× |
 | PyTorch on Mac | ~450 µs | ~450,000× |
 
-For ncpu-bridge, correctness was the research goal, not performance. The ONNX and Hailo paths demonstrate that the gap is an engineering problem with known solutions.
+Batched ONNX inference narrows the gap dramatically. At batch size 1,000, the overhead factor drops from ~10,000× to ~260× on ARM and ~90× on Apple Silicon.
 
-### 11.2 Math Model Collapse
+### 13.2 Math Model Collapse
 
 All six math models (sincos, sqrt, exp, log, atan2, doom_trig) have collapsed weights — they produce constant output regardless of input. This is a known training failure mode for continuous-valued regression targets.
 
 **Mitigation path:** Retrain with Huber loss, learning rate warmup, and target normalization. The discrete ALU models don't suffer this because their output space is finite (256 values for 8-bit ops).
 
-### 11.3 Multi-Byte Carry Chaining
+### 13.3 Multi-Byte Carry Chaining
 
 16-bit and 32-bit operations via carry chaining are designed (using the carry_combine model for Kogge-Stone parallel prefix) but not yet exhaustively verified. The 16-bit domain (65,536 × 65,536 = 4.3 billion pairs) makes exhaustive testing impractical without sampling strategies.
 
-### 11.4 Hailo-8 Silicon Compilation
+### 13.4 Hailo-8 Silicon Compilation
 
 Completing the Hailo-8 acceleration path requires:
 1. Access to Hailo Dataflow Compiler (DFC) — developer account pending
@@ -604,7 +701,7 @@ Completing the Hailo-8 acceleration path requires:
 
 The ONNX models are exported and verified; only the ONNX → HEF conversion step remains.
 
-### 11.5 Future Directions
+### 13.5 Future Directions
 
 - **Retrain math models** with improved loss functions
 - **Complete Hailo-8 pipeline** for sub-microsecond ops
@@ -613,11 +710,11 @@ The ONNX models are exported and verified; only the ONNX → HEF conversion step
 
 ---
 
-## 12. Conclusion
+## 14. Conclusion
 
 ncpu-bridge demonstrates that neural networks can implement every computing primitive required for a complete system stack. Starting from trained PyTorch models that perform arithmetic, comparison, and bitwise operations with 100% accuracy on 8-bit operands, we built 44 system-level modules — from a C compiler and TCP stack to a kernel, database, and ARM64 instruction decoder.
 
-The 34 trained models (~2.5M parameters total) span eight neural architectures, each matched to its computational role. ONNX deployment on ARM Cortex-A76 achieves 576,668 neural ops/sec, with Hailo-8 hardware acceleration expected to push core operations below 1 microsecond.
+The 34 trained models (~2.5M parameters total) span eight neural architectures, each matched to its computational role. Batched ONNX deployment achieves **3.9M neural ops/sec on Raspberry Pi 5 (ARM64)** and **10.8M ops/sec on Apple Silicon**, with Hailo-8 hardware acceleration expected to push throughput beyond 50M ops/sec.
 
 Cross-substrate verification proves that the computation is substrate-invariant: all 8 binary operations produce bit-identical results (verified by SHA-256 hash equality over 524,288 test cases) whether executed via PyTorch on Apple Silicon or ONNX Runtime on ARM Cortex-A76. The neural weights encode the computation; the inference engine is interchangeable. A production deployment via FastAPI RPC achieves 5.7ms neural-verified obligation checks, demonstrating the path from research to real-world agent infrastructure.
 

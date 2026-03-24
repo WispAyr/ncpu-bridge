@@ -6,7 +6,8 @@ import time
 from pathlib import Path
 
 
-NCPU_PATH = Path("/Users/noc/projects/nCPU")
+from bridge.config import get_ncpu_path, get_bridge_path, get_clawd_data_path
+NCPU_PATH = get_ncpu_path()
 
 
 def _ensure_ncpu():
@@ -19,6 +20,8 @@ def _ensure_ncpu():
 class NCPUBridge:
     """Bridge to nCPU's verified neural ALU and GPU compute."""
 
+    SUPPORTED_WIDTHS = {8, 16, 32}
+
     def __init__(self, ncpu_path: str = str(NCPU_PATH)):
         self.ncpu_path = Path(ncpu_path)
         _ensure_ncpu()
@@ -27,39 +30,60 @@ class NCPUBridge:
 
         self.neural_ops = NeuralOps(models_dir=str(self.ncpu_path / "models"))
         self._available = self.neural_ops.load()
+        self._width = 32  # default: native 32-bit (no masking)
+        self._mask = 0xFFFFFFFF
+        self._sign_bit = 0x80000000
+
+    def set_width(self, bits: int) -> None:
+        """Configure operation width (8, 16, or 32). Results are masked accordingly."""
+        if bits not in self.SUPPORTED_WIDTHS:
+            raise ValueError(f"Unsupported width {bits}. Use one of {sorted(self.SUPPORTED_WIDTHS)}")
+        self._width = bits
+        self._mask = (1 << bits) - 1
+        self._sign_bit = 1 << (bits - 1)
+
+    @property
+    def width(self) -> int:
+        return self._width
+
+    def _apply_width(self, value: int) -> int:
+        """Mask result to the configured bit width. At 32-bit (native), pass through."""
+        if self._width == 32:
+            return value
+        return value & self._mask
 
     # ── Direct neural ALU operations ──────────────────────────────
 
     def add(self, a: int, b: int) -> int:
-        return self.neural_ops.neural_add(a, b)
+        return self._apply_width(self.neural_ops.neural_add(a, b))
 
     def sub(self, a: int, b: int) -> int:
-        return self.neural_ops.neural_sub(a, b)
+        return self._apply_width(self.neural_ops.neural_sub(a, b))
 
     def mul(self, a: int, b: int) -> int:
-        return self.neural_ops.neural_mul(a, b)
+        return self._apply_width(self.neural_ops.neural_mul(a, b))
 
     def div(self, a: int, b: int) -> int:
-        return self.neural_ops.neural_div(a, b)
+        return self._apply_width(self.neural_ops.neural_div(a, b))
 
     def cmp(self, a: int, b: int) -> tuple[bool, bool]:
         """Compare a and b. Returns (zero_flag, sign_flag)."""
         return self.neural_ops.neural_cmp(a, b)
 
     def bitwise_and(self, a: int, b: int) -> int:
-        return self.neural_ops.neural_and(a, b)
+        return self._apply_width(self.neural_ops.neural_and(a, b))
 
     def bitwise_or(self, a: int, b: int) -> int:
-        return self.neural_ops.neural_or(a, b)
+        return self._apply_width(self.neural_ops.neural_or(a, b))
 
     def bitwise_xor(self, a: int, b: int) -> int:
-        return self.neural_ops.neural_xor(a, b)
+        return self._apply_width(self.neural_ops.neural_xor(a, b))
 
     def shl(self, value: int, amount: int) -> int:
-        return self.neural_ops.neural_shl(value, amount)
+        return self._apply_width(self.neural_ops.neural_shl(value, amount))
 
     def shr(self, value: int, amount: int) -> int:
-        return self.neural_ops.neural_shr(value, amount)
+        return self._apply_width(self.neural_ops.neural_shr(value, amount))
 
     # ── Expression evaluator ─────────────────────────────────────
 
