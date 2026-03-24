@@ -1,0 +1,744 @@
+{
+  "timestamp": "2026-03-24T17:23:23Z",
+  "z3_available": true,
+  "models": {
+    "arithmetic": {
+      "description": "Full adder (a,b,carry \u2192 sum,carry_out)",
+      "domain_size": 8,
+      "architecture": "Sequential(3\u2192128\u219264\u21922), sigmoid",
+      "exhaustive": {
+        "pass": true,
+        "correct": 8,
+        "total": 8,
+        "certificate": "ea9c1962d4a17a32e9fdde6789a9fa158a62c915b6ed55cc20eaac94c45bc82c"
+      },
+      "z3_proof": {
+        "proved": true,
+        "details": [
+          {
+            "input": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          }
+        ]
+      }
+    },
+    "carry_combine": {
+      "description": "Carry combine: G_out = Gi|(Pi&Gj), P_out = Pi&Pj",
+      "domain_size": 16,
+      "architecture": "Sequential(4\u219264\u219232\u21922), sigmoid",
+      "exhaustive": {
+        "pass": true,
+        "correct": 16,
+        "total": 16,
+        "certificate": "410b646da809c559b455939f2ee1639bed2a6b15a99d0f1e9725cdd89e02d4aa"
+      },
+      "z3_proof": {
+        "proved": true,
+        "details": [
+          {
+            "input": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          }
+        ]
+      }
+    },
+    "divide": {
+      "description": "Division bit-op (same arch as full adder)",
+      "domain_size": 8,
+      "architecture": "Sequential(3\u219264\u219232\u21922), sigmoid",
+      "exhaustive": {
+        "pass": true,
+        "correct": 8,
+        "total": 8,
+        "certificate": "4253d4c0064755fc6014163b0ec94ee2d903f45b1ac1c2d07dfed907439c7592"
+      },
+      "z3_proof": {
+        "proved": true,
+        "details": [
+          {
+            "input": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          }
+        ]
+      }
+    },
+    "compare": {
+      "description": "Comparison (3-class: less, equal, greater)",
+      "domain_size": 8,
+      "architecture": "Linear(3\u21923), sigmoid",
+      "exhaustive": {
+        "pass": false,
+        "correct": 1,
+        "total": 8,
+        "certificate": "06f93f6f315f05291411c8eaf90e96b4bea70eb17d0dcf4482f740512e7dd91a"
+      },
+      "z3_proof": {
+        "proved": false,
+        "details": [
+          {
+            "input": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "proved": false,
+            "z3_result": "sat"
+          },
+          {
+            "input": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "proved": false,
+            "z3_result": "sat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "proved": false,
+            "z3_result": "sat"
+          },
+          {
+            "input": [
+              0.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "proved": false,
+            "z3_result": "sat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "proved": false,
+            "z3_result": "sat"
+          },
+          {
+            "input": [
+              1.0,
+              0.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "proved": true,
+            "z3_result": "unsat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              0.0
+            ],
+            "expected": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "proved": false,
+            "z3_result": "sat"
+          },
+          {
+            "input": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "expected": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "proved": false,
+            "z3_result": "sat"
+          }
+        ]
+      }
+    },
+    "logical": {
+      "description": "7 logic ops (AND,OR,XOR,NOT_A,NOT_B,NAND,NOR) as truth table parameters",
+      "domain_size": "7\u00d74 = 28 entries",
+      "architecture": "Parameter[7,4] (lookup table, not a neural network)",
+      "exhaustive": {
+        "pass": true,
+        "results": {
+          "AND": {
+            "expected": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "actual": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "match": true
+          },
+          "OR": {
+            "expected": [
+              0,
+              1,
+              1,
+              1
+            ],
+            "actual": [
+              0,
+              1,
+              1,
+              1
+            ],
+            "match": true
+          },
+          "XOR": {
+            "expected": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "actual": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "match": true
+          },
+          "NOT_A": {
+            "expected": [
+              1,
+              1,
+              0,
+              0
+            ],
+            "actual": [
+              1,
+              1,
+              0,
+              0
+            ],
+            "match": true
+          },
+          "BIC": {
+            "expected": [
+              0,
+              0,
+              1,
+              0
+            ],
+            "actual": [
+              0,
+              0,
+              1,
+              0
+            ],
+            "match": true
+          },
+          "NOR": {
+            "expected": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "actual": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "match": true
+          },
+          "AND2": {
+            "expected": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "actual": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "match": true
+          }
+        },
+        "certificate": "f5595a4b0d2ec3300c1d5519084d210d235f3dd2684417917899e737727fc5ac"
+      },
+      "z3_proof": "N/A \u2014 parameter lookup, not a function to prove"
+    },
+    "multiply": {
+      "description": "Byte multiplication via 256\u00d7256\u00d716 LUT",
+      "domain_size": "256\u00d7256 = 65,536 entries",
+      "architecture": "Parameter[256,256,16] (lookup table)",
+      "exhaustive": {
+        "pass": false,
+        "correct": 511,
+        "total": 65536,
+        "certificate": "99b12771148c0038e531f485f4da19251e3f03a2e2253a70a88545a2eda2b91b"
+      },
+      "z3_proof": "N/A \u2014 lookup table (65K entries), exhaustive enumeration with certificate hash"
+    }
+  },
+  "overall_pass": false
+}
