@@ -102,7 +102,7 @@ class NeuralKernel:
         dns = NeuralDNS()
         self._subsystems["dns"] = dns
         stats = dns.cache_stats()
-        self._log(f"NET: DNS resolver ready ({stats.get('zones', 0)} zones)")
+        self._log(f"NET: DNS resolver ready ({stats.get('zones', stats.get('zone_records', 0))} zones)")
         
         from bridge.neural_http import NeuralHTTPServer
         self._subsystems["http"] = NeuralHTTPServer()
@@ -206,7 +206,7 @@ class NeuralKernel:
         if dns:
             ds = dns.cache_stats()
             zones = ds.get('zones', ds.get('zone_records', 0))
-            cached = ds.get('cached', ds.get('cache_entries', 0))
+            cached = ds.get('cached', ds.get('entries', 0))
             print(f"║  DNS:        {zones} zones, {cached} cached                     ║")
         
         elapsed = time.time() - self._uptime_start
