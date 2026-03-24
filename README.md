@@ -2,6 +2,20 @@
 
 **A bridge between neural computation and real-world infrastructure monitoring.**
 
+## 📄 Whitepaper
+
+**[Neural Computing Primitives: Building a Complete Computing Stack on Trained Neural Networks](paper/paper.pdf)**
+
+We route every computing primitive — arithmetic, comparison, bitwise, and shift operations — through trained PyTorch neural networks. Built atop the nCPU project's 66 verified ALU operations, ncpu-bridge implements 44 system-level modules spanning a C compiler, TCP stack, filesystem, virtual machine, database, kernel, and more.
+
+**Key results:**
+- **44 system modules** built entirely on neural primitives (compiler, TCP/IP, filesystem, SQL database, kernel, Forth interpreter, ARM64 decoder)
+- **34 trained models** totalling ~2.5M parameters — 100% correctness across all operations
+- **Cross-substrate verification:** 524,288 test cases produce bit-identical results across PyTorch (Apple Silicon) and ONNX Runtime (Raspberry Pi ARM64)
+- **ONNX deployment** achieves 576,668 ops/sec with a clear path to sub-microsecond latency via Hailo-8 neural accelerators
+
+📊 [Verification Report](verification/VERIFICATION_REPORT.md) · 📄 [Paper (PDF)](paper/paper.pdf)
+
 Every arithmetic, comparison, and bitwise operation runs through trained PyTorch neural networks on the [nCPU](https://github.com/WispAyr/nCPU) — a CPU built entirely from neural ALU models.
 
 ## What's In Here
